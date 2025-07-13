@@ -4,10 +4,10 @@
   <meta charset="UTF-8" />
   <title>2048 Classic</title>
   <style>
-    /* ===== CSS from style.css ===== */
     body {
       font-family: Arial, sans-serif;
       background: url('images/background.jpg') no-repeat center center fixed;
+      
       background-size: cover;
       text-align: center;
       padding: 20px;
@@ -30,6 +30,7 @@
       gap: 15px;
       align-items: center;
       margin-bottom: 20px;
+      flex-wrap: wrap;
     }
     .score-box {
       background: rgba(255, 255, 255, 0.1);
@@ -37,9 +38,13 @@
       border-radius: 6px;
       border: 2px solid #bbada0;
       color: #ffffff;
-      font-size: 1.2em;
+      font-size: 1em;
       text-align: center;
-      min-width: 80px;
+      min-width: 100px;
+    }
+    .score-box div:first-child {
+      font-weight: bold;
+      margin-bottom: 5px;
     }
     #grid-container {
       display: grid;
@@ -147,8 +152,14 @@
   <div class="game-container">
     <h1 class="glow-title">2048 Classic</h1>
     <div id="scoreboard">
-      <div class="score-box"><div id="score">0</div></div>
-      <div class="score-box"><div id="best-score">0</div></div>
+      <div class="score-box">
+        <div>Score</div>
+        <div id="score">0</div>
+      </div>
+      <div class="score-box">
+        <div>Best</div>
+        <div id="best-score">0</div>
+      </div>
       <button id="new-game-btn">New Game</button>
     </div>
     <div id="grid-container"></div>
@@ -200,8 +211,8 @@
         }
         gridContainer.appendChild(tile);
       });
-      scoreDisplay.textContent = "Score: " + score;
-      bestScoreDisplay.textContent = "Best: " + bestScore;
+      scoreDisplay.textContent = score;
+      bestScoreDisplay.textContent = bestScore;
     }
 
     function placeRandomTile() {
@@ -213,7 +224,7 @@
       });
       if (empty.length === 0) return;
       const [i, j] = empty[Math.floor(Math.random() * empty.length)];
-      grid[i][j] = Math.random() < 0.3 ? 2 : 4;
+      grid[i][j] = Math.random() < 0.9 ? 2 : 4; // classic spawn chance
     }
 
     function move(direction) {
@@ -302,8 +313,31 @@
         case "ArrowRight": move("right"); break;
         case "ArrowUp": move("up"); break;
         case "ArrowDown": move("down"); break;
+        case "r":
+        case "R":
+          restartGame();
+          break;
       }
     });
+
+   
+    let touchStartX, touchStartY;
+    document.addEventListener("touchstart", (e) => {
+      const touch = e.touches[0];
+      touchStartX = touch.clientX;
+      touchStartY = touch.clientY;
+    }, { passive: true });
+
+    document.addEventListener("touchend", (e) => {
+      const touch = e.changedTouches[0];
+      const dx = touch.clientX - touchStartX;
+      const dy = touch.clientY - touchStartY;
+      if (Math.abs(dx) > Math.abs(dy)) {
+        dx > 0 ? move("right") : move("left");
+      } else {
+        dy > 0 ? move("down") : move("up");
+      }
+    }, { passive: true });
 
     newGameBtn.addEventListener("click", restartGame);
     createGrid();
