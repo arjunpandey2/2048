@@ -213,7 +213,7 @@
       });
       if (empty.length === 0) return;
       const [i, j] = empty[Math.floor(Math.random() * empty.length)];
-      grid[i][j] = Math.random() < 0.9 ? 2 : 4;
+      grid[i][j] = Math.random() < 0.3 ? 2 : 4;
     }
 
     function move(direction) {
